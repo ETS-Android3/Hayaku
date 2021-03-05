@@ -1,0 +1,37 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        app:key="notification"
+        app:summaryOff="😇"
+        app:summaryOn="😎"
+        app:title="Tweet Like Jobs"/>
+
+    <PreferenceCategory app:title="Timeline Streaming">
+        <SwitchPreference
+            app:dependency="notification"
+            app:key="timeline"
+            app:title="Show timeline on notification"
+            />
+        <ListPreference
+            app:dependency="timeline"
+            app:defaultValue="reply"
+            app:entries="@array/reply_entries"
+            app:entryValues="@array/reply_values"
+            app:key="reply"
+            app:title="Refresh rate"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="ETC">
+        <Preference
+            app:title="Tutorial"
+            />
+        <Preference
+            app:title="About this app"
+            />
+        <Preference
+            app:title="Opensource Lisence"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>
