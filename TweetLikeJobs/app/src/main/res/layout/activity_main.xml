@@ -22,9 +22,10 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="10dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="5dp"
+                android:contentDescription="Twitter Profile Picture"
                 app:srcCompat="@drawable/egg" />
 
             <LinearLayout
@@ -37,39 +38,34 @@
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="3dp"
                     android:text="Login to Twitter"
-                    android:textColor="#0000FF"
-                    android:textSize="30sp" />
+                    android:textColor="@color/black"
+                    android:textSize="23sp" />
 
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
                     android:text="Please touch"
-                    android:textColor="#00FFFF"
-                    android:textSize="24sp" />
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="17sp" />
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="10dp"
-        app:cardUseCompatPadding="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        app:cardUseCompatPadding="true">
 
-        <ScrollView
+        <fragment
+            android:id="@+id/fragment"
+            android:name="com.riel_dev.tweetlikejobs.SettingsFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <fragment
-                android:id="@+id/fragment"
-                android:name="com.riel_dev.tweetlikejobs.SettingsFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </ScrollView>
+            android:layout_height="match_parent" />
     </androidx.cardview.widget.CardView>
 
 </LinearLayout>

@@ -5,13 +5,16 @@
         app:key="notification"
         app:summaryOff="😇"
         app:summaryOn="😎"
-        app:title="Tweet Like Jobs"/>
+        android:icon="@drawable/ic_power"
+        app:title="Tweet Like Jobs"
+        />
 
     <PreferenceCategory app:title="Timeline Streaming">
         <SwitchPreference
             app:dependency="notification"
             app:key="timeline"
             app:title="Show timeline on notification"
+            android:icon="@drawable/ic_align_left"
             />
         <ListPreference
             app:dependency="timeline"
@@ -20,18 +23,22 @@
             app:entryValues="@array/reply_values"
             app:key="reply"
             app:title="Refresh rate"
+            android:icon="@drawable/ic_refresh_ccw"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="ETC">
         <Preference
             app:title="Tutorial"
+            android:icon="@drawable/ic_twitter"
             />
         <Preference
             app:title="About this app"
+            android:icon="@drawable/ic_info"
             />
         <Preference
             app:title="Opensource Lisence"
+            android:icon="@drawable/ic_github"
             />
     </PreferenceCategory>
 </PreferenceScreen>
