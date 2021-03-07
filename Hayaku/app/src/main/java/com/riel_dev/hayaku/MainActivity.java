@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     TextView textView;
     TextView textView2;
-    SettingsFragment settingsFragment;
 
     // Global Twitter Type Objects
     RequestToken requestToken;
@@ -54,12 +53,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        SettingsFragment settingsFragment;
         settingsFragment = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isNotificationOn = sharedPreferences.getBoolean("notification", false);
-
-
         if(isNotificationOn){
             // createNotification();
         }else{
