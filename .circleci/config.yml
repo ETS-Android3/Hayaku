@@ -3,6 +3,10 @@ version: 2.1
 orbs:
   android: circleci/android@0.2.1
 
+dependencies:
+  override:
+    - chmod +x gradlew
+
 jobs:
   build:
     executor: android/android
@@ -11,4 +15,4 @@ jobs:
       - checkout
       - run:
           command: 
-            ./gradlew bootRepackage
+            ./gradlew build
