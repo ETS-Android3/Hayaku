@@ -4,9 +4,11 @@ orbs:
   android: circleci/android@0.2.1
 
 dependencies:
-  override:
-    command:
-      chmod +x gradlew
+  pre:
+  - echo y | android update sdk --no-ui --all --filter "android-30"
+  - echo y | android update sdk --no-ui --all --filter "build-tools-30.0.3"
+  - echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"
+
 
 jobs:
   build:
@@ -16,4 +18,4 @@ jobs:
       - checkout
       - run:
           command: 
-            ./gradlew build
+            ./gradlew test
