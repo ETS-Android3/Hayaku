@@ -5,7 +5,8 @@ orbs:
 
 dependencies:
   override:
-    - chmod +x gradlew
+    command:
+      chmod +x gradlew
 
 jobs:
   build:
