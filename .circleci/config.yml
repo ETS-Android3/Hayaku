@@ -18,4 +18,4 @@ jobs:
       - checkout
       - run:
           command: 
-            cd Hayaku;./gradlew test
+            cd Hayaku;chmod +x gradlew;./gradlew test
