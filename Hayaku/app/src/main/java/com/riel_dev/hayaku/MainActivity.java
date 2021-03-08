@@ -12,6 +12,9 @@ import androidx.preference.SwitchPreference;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import androidx.core.app.RemoteInput;
+
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +38,8 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.util.Random;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -44,6 +49,9 @@ import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final int NOTIFICATION_ID = 1;
+    String KEY_TWEET = "key_tweet";
 
     // Global Basic Types
     Boolean isAlreadyLoggedInToTwitter;
@@ -62,6 +70,12 @@ public class MainActivity extends AppCompatActivity {
     TwitterFactory twitterFactory;
     Twitter twitter;
 
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        processInlineReply(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,15 +116,17 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("프사좀", profilePicUrl);
                         // 트위터 닉네임 가져오기
                         String nickname = user.getName();
+                        CustomPreferenceManager.setString(getApplicationContext(), "nickname", nickname);
                         textView = findViewById(R.id.textView);
                         Log.d("nickname", nickname);
-                        textView.setText(nickname);
+                        textView.setText(CustomPreferenceManager.getString(getApplicationContext(), "nickname"));
                         // 트위터 아이디 가져오기
                         String twitterId = user.getScreenName();
                         textView2 = findViewById(R.id.textView2);
                         Log.d("twitterID", twitterId);
                         // @ in Unicode is \u0040
-                        textView2.setText("\u0040" + twitterId);
+                        CustomPreferenceManager.setString(getApplicationContext(), "twitterId", "\u0040" + twitterId);
+                        textView2.setText(CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
                     } catch (TwitterException e) {
                         e.printStackTrace();
                     }
@@ -210,38 +226,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void show() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default");
+        RemoteInput remoteInput = new RemoteInput.Builder(KEY_TWEET)
+                .setLabel("What's happening?")
+                .build();
+
+        int randomRequestCode = new Random().nextInt(54325);
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, randomRequestCode,
+                resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // 필수 항목
         builder.setSmallIcon(R.mipmap.ic_tweetlikejobs);
-        builder.setContentTitle("알림 제목");
-        builder.setContentText("알림 세부 텍스트");
+        builder.setContentText("Logged into " + CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
+        builder.setContentTitle("Hayaku is running");
         builder.setOngoing(true);
 
+        NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(
+                R.drawable.ic_edit, "Tweet", resultPendingIntent).addRemoteInput(remoteInput)
+                .setAllowGeneratedReplies(false)
+                .build();
+        builder.addAction(tweetAction);
+
         // 액션 정의
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent2 = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0,
-                intent,
+                intent2,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         // 클릭 이벤트 설정
         builder.setContentIntent(pendingIntent);
-
-        // 큰 아이콘 설정
-        // Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_tweetlikejobs);
-        // builder.setLargeIcon(largeIcon);
-
-        // 색상 변경
-        // builder.setColor(Color.RED);
-
-        // 기본 알림음 사운드 설정
-        Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
-        builder.setSound(ringtoneUri);
-
-        // 진동설정: 대기시간, 진동시간, 대기시간, 진동시간 ... 반복 패턴
-        long[] vibrate = {0, 100, 200, 300};
-        builder.setVibrate(vibrate);
-
-        builder.setAutoCancel(true);
 
         // 알림 매니저
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -252,16 +265,40 @@ public class MainActivity extends AppCompatActivity {
         manager.notify(1, builder.build());
     }
 
+    private void processInlineReply(Intent intent) {
+        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+
+        if (remoteInput != null) {
+            String tweetString = remoteInput.getCharSequence(
+                    KEY_TWEET).toString();
+            Toast.makeText(getApplicationContext(), tweetString, Toast.LENGTH_LONG).show();
+
+
+            //Update the notification to show that the reply was received.
+            NotificationCompat.Builder repliedNotification =
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(
+                                    android.R.drawable.stat_notify_chat)
+                            .setContentText("Tweet Sent!");
+
+            NotificationManager notificationManager =
+                    (NotificationManager)
+                            getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(NOTIFICATION_ID,
+                    repliedNotification.build());
+
+        }
+    }
+
     private void hide() {
         NotificationManagerCompat.from(this).cancel(1);
     }
-
-
     public void createNotification() {
         show();
     }
-
     public void removeNotification() {
         hide();
     }
+
+
 }

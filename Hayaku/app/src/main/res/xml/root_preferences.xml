@@ -37,7 +37,7 @@
             android:icon="@drawable/ic_info"
             />
         <Preference
-            app:title="Opensource Lisence"
+            app:title="OpenSource Lisence"
             android:icon="@drawable/ic_github"
             />
     </PreferenceCategory>
