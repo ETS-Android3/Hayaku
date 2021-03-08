@@ -2,17 +2,31 @@ package com.riel_dev.hayaku;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreference;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     TextView textView;
     TextView textView2;
+    SwitchPreference notificationSwitchPreference;
 
     // Global Twitter Type Objects
     RequestToken requestToken;
@@ -57,11 +72,6 @@ public class MainActivity extends AppCompatActivity {
         settingsFragment = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isNotificationOn = sharedPreferences.getBoolean("notification", false);
-        if(isNotificationOn){
-            // createNotification();
-        }else{
-            // removeNotification();
-        }
 
         /* Connect Views with findViewById */
         accountCard = findViewById(R.id.twitterAccountCardView);
@@ -198,4 +208,60 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void show() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default");
+
+        // 필수 항목
+        builder.setSmallIcon(R.mipmap.ic_tweetlikejobs);
+        builder.setContentTitle("알림 제목");
+        builder.setContentText("알림 세부 텍스트");
+        builder.setOngoing(true);
+
+        // 액션 정의
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        // 클릭 이벤트 설정
+        builder.setContentIntent(pendingIntent);
+
+        // 큰 아이콘 설정
+        // Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_tweetlikejobs);
+        // builder.setLargeIcon(largeIcon);
+
+        // 색상 변경
+        // builder.setColor(Color.RED);
+
+        // 기본 알림음 사운드 설정
+        Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(ringtoneUri);
+
+        // 진동설정: 대기시간, 진동시간, 대기시간, 진동시간 ... 반복 패턴
+        long[] vibrate = {0, 100, 200, 300};
+        builder.setVibrate(vibrate);
+
+        builder.setAutoCancel(true);
+
+        // 알림 매니저
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // 오레오에서는 알림 채널을 매니저에 생성해야 한다
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            manager.createNotificationChannel(new NotificationChannel("default", "기본 채널", NotificationManager.IMPORTANCE_LOW));
+        }
+        manager.notify(1, builder.build());
+    }
+
+    private void hide() {
+        NotificationManagerCompat.from(this).cancel(1);
+    }
+
+
+    public void createNotification() {
+        show();
+    }
+
+    public void removeNotification() {
+        hide();
+    }
 }

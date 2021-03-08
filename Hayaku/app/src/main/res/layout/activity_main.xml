@@ -61,7 +61,7 @@
         app:cardCornerRadius="10dp"
         app:cardUseCompatPadding="true">
 
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment"
             android:name="com.riel_dev.hayaku.SettingsFragment"
             android:layout_width="match_parent"

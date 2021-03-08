@@ -1,10 +1,13 @@
 package com.riel_dev.hayaku;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+
+import java.util.Objects;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
@@ -37,8 +40,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            
+            if (isAdded()) {
+                if (sharedPreferences.getBoolean(key, true)) {
+                    ((MainActivity) requireActivity()).createNotification();
+                } else {
+                    ((MainActivity) requireActivity()).removeNotification();
+                }
+            }
         }
     };
+
+
 
 }

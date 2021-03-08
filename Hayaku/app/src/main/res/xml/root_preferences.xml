@@ -2,16 +2,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
-        app:key="notification"
-        app:summaryOff="😇"
-        app:summaryOn="😎"
+        android:id="@+id/notificationSwitch"
         android:icon="@drawable/ic_power"
-        app:title="Tweet Like Jobs"
-        />
+        app:key="notificationSwitch"
+        app:title="Hayaku" />
 
+    <!--
     <PreferenceCategory app:title="Timeline Streaming">
         <SwitchPreference
-            app:dependency="notification"
+            app:dependency="notificationSwitch"
             app:key="timeline"
             app:title="Show timeline on notification"
             android:icon="@drawable/ic_align_left"
@@ -26,6 +25,7 @@
             android:icon="@drawable/ic_refresh_ccw"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
+    -->
 
     <PreferenceCategory android:title="ETC">
         <Preference
