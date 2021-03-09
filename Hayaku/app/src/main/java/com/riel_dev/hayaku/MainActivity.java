@@ -6,9 +6,11 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -39,6 +41,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 
 import java.util.Random;
 
@@ -52,11 +55,9 @@ import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class MainActivity extends AppCompatActivity {
-
+    // Global Basic Types
     public static final int NOTIFICATION_ID = 1;
     String KEY_TWEET = "key_tweet";
-
-    // Global Basic Types
     Boolean isAlreadyLoggedInToTwitter;
     String profilePicUrl;
 
@@ -65,15 +66,14 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     TextView textView;
     TextView textView2;
-    SwitchPreference notificationSwitchPreference;
     Bundle remoteInput;
+    SettingsFragment settingsFragment;
 
     // Global Twitter Type Objects
     RequestToken requestToken;
     ConfigurationBuilder configurationBuilder;
     TwitterFactory twitterFactory;
     Twitter twitter;
-
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SettingsFragment settingsFragment;
-        settingsFragment = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
+        loadSettingPreferences();
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isNotificationOn = sharedPreferences.getBoolean("notification", false);
 
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         textView2 = findViewById(R.id.textView2);
 
-        Handler twitterDataLoadHandler = new Handler(){
+        @SuppressLint("HandlerLeak") Handler twitterDataLoadHandler = new Handler(){
             public void handleMessage(Message msg){
                 setTwitterDataToViews();
             }
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                                 TwitterFactory factory = new TwitterFactory(configuration);
                                 twitter = factory.getInstance();
                                 requestToken = twitter.getOAuthRequestToken();
-
+                                // intent to LoginActivity
                                 String twitterAuthURL = requestToken.getAuthorizationURL();
                                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                                 intent.putExtra("url", twitterAuthURL);
@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
     /* ReLoad View for some reasons such as Twitter data load */
     public void reload(){
         Intent intent = getIntent();
@@ -217,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
         startActivity(intent);
     }
-
     private void show() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default");
         RemoteInput remoteInput = new RemoteInput.Builder(KEY_TWEET)
@@ -252,13 +250,54 @@ public class MainActivity extends AppCompatActivity {
 
         // 알림 매니저
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // 오레오에서는 알림 채널을 매니저에 생성해야 한다
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             manager.createNotificationChannel(new NotificationChannel("default", "기본 채널", NotificationManager.IMPORTANCE_LOW));
         }
         manager.notify(1, builder.build());
     }
+    
+    /* 프리퍼런스 연결 */
+    private void loadSettingPreferences(){
+        settingsFragment = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
 
+        // Open Source Notices
+        Preference OssPreference = null;
+        if (settingsFragment != null) {
+            OssPreference = settingsFragment.findPreference("openSourceNotices");
+        }
+        if (OssPreference != null) {
+            OssPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    OssLicensesMenuActivity.setActivityTitle("Open Source Licenses");
+                    startActivity(new Intent(getApplicationContext(), OssLicensesMenuActivity.class));
+                    return true;
+                }
+            });
+        }
+
+        Preference tutorialPreference = settingsFragment.findPreference("tutorial");
+        if (tutorialPreference != null) {
+            tutorialPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    // 튜토리얼 추가
+                    return false;
+                }
+            });
+        }
+
+        Preference infoPreference = settingsFragment.findPreference("information");
+        if (infoPreference != null) {
+            infoPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    // 인포메이션 추가
+                    return false;
+                }
+            });
+        }
+    }
     private void processInlineReply(Intent intent) {
         Bundle bundle = RemoteInput.getResultsFromIntent(intent);
 
@@ -296,7 +335,15 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
+    private void hide() {
+        NotificationManagerCompat.from(this).cancel(1);
+    }
+    public void createNotification() {
+        show();
+    }
+    public void removeNotification() {
+        hide();
+    }
     private void loadTwitterData() throws TwitterException {
         User user = twitter.showUser(twitter.getId());
         profilePicUrl = user.getOriginalProfileImageURLHttps();
@@ -315,16 +362,5 @@ public class MainActivity extends AppCompatActivity {
         textView2 = findViewById(R.id.textView2);
         textView2.setText(CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
     }
-
-    private void hide() {
-        NotificationManagerCompat.from(this).cancel(1);
-    }
-    public void createNotification() {
-        show();
-    }
-    public void removeNotification() {
-        hide();
-    }
-
 
 }
