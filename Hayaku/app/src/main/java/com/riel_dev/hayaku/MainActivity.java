@@ -25,6 +25,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -40,6 +42,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.Random;
 
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textView;
     TextView textView2;
     SwitchPreference notificationSwitchPreference;
+    Bundle remoteInput;
 
     // Global Twitter Type Objects
     RequestToken requestToken;
@@ -93,6 +97,12 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         textView2 = findViewById(R.id.textView2);
 
+        Handler twitterDataLoadHandler = new Handler(){
+            public void handleMessage(Message msg){
+                setTwitterDataToViews();
+            }
+        };
+
         /* Bring Twitter Login Data with PreferenceManager then show into TextViews */
         isAlreadyLoggedInToTwitter = CustomPreferenceManager.getBoolean(getApplicationContext(),"login");
         if(isAlreadyLoggedInToTwitter){
@@ -103,30 +113,14 @@ public class MainActivity extends AppCompatActivity {
             configurationBuilder.setOAuthAccessTokenSecret(CustomPreferenceManager.getString(getApplicationContext(), "access_secret"));
             twitterFactory = new TwitterFactory(configurationBuilder.build());
             twitter = twitterFactory.getInstance();
+
             Thread twitterDataLoadThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        /* TODO - Twitter Nickname & Twitter ID should be in shared preference
-                        *       - Then change by shared preference                                */
-                        // 트위터 인장 가져오기
-                        User user = twitter.showUser(twitter.getId());
-                        profilePicUrl = user.getOriginalProfileImageURLHttps();
-                        CustomPreferenceManager.setString(getApplicationContext(), "profilePicUrl", profilePicUrl);
-                        Log.d("프사좀", profilePicUrl);
-                        // 트위터 닉네임 가져오기
-                        String nickname = user.getName();
-                        CustomPreferenceManager.setString(getApplicationContext(), "nickname", nickname);
-                        textView = findViewById(R.id.textView);
-                        Log.d("nickname", nickname);
-                        textView.setText(CustomPreferenceManager.getString(getApplicationContext(), "nickname"));
-                        // 트위터 아이디 가져오기
-                        String twitterId = user.getScreenName();
-                        textView2 = findViewById(R.id.textView2);
-                        Log.d("twitterID", twitterId);
-                        // @ in Unicode is \u0040
-                        CustomPreferenceManager.setString(getApplicationContext(), "twitterId", "\u0040" + twitterId);
-                        textView2.setText(CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
+                        loadTwitterData();
+                        Message msg = twitterDataLoadHandler.obtainMessage();
+                        twitterDataLoadHandler.sendMessage(msg);
                     } catch (TwitterException e) {
                         e.printStackTrace();
                     }
@@ -140,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         if(CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl") != null) {
             Log.d("Profile Pic Url", CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl"));
             RequestOptions requestOptions = new RequestOptions();
-            requestOptions = requestOptions.transform(new CenterCrop(), new RoundedCorners(20));
+            requestOptions = requestOptions.transform(new CenterCrop(), new RoundedCorners(30));
             Glide.with(MainActivity.this)
                     .load(Uri.parse(CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl")))
                     .apply(requestOptions)
@@ -266,13 +260,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void processInlineReply(Intent intent) {
-        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+        Bundle bundle = RemoteInput.getResultsFromIntent(intent);
 
-        if (remoteInput != null) {
+        if (bundle != null) {
+            Log.d("remoteInput", "들어옴");
             String tweetString = remoteInput.getCharSequence(
                     KEY_TWEET).toString();
             Toast.makeText(getApplicationContext(), tweetString, Toast.LENGTH_LONG).show();
 
+            Thread sendTwitter = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    twitter = TwitterFactory.getSingleton();
+                    try {
+                        Status status = twitter.updateStatus(tweetString);
+                    } catch (TwitterException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            sendTwitter.start();
 
             //Update the notification to show that the reply was received.
             NotificationCompat.Builder repliedNotification =
@@ -288,6 +295,25 @@ public class MainActivity extends AppCompatActivity {
                     repliedNotification.build());
 
         }
+    }
+
+    private void loadTwitterData() throws TwitterException {
+        User user = twitter.showUser(twitter.getId());
+        profilePicUrl = user.getOriginalProfileImageURLHttps();
+        CustomPreferenceManager.setString(getApplicationContext(), "profilePicUrl", profilePicUrl);
+        Log.d("Profile Picture Url: ", profilePicUrl);
+        String nickname = user.getName();
+        CustomPreferenceManager.setString(getApplicationContext(), "nickname", nickname);
+        Log.d("Twitter Nickname: ", nickname);
+        String twitterId = user.getScreenName();
+        Log.d("Twitter ID: ", twitterId);
+        CustomPreferenceManager.setString(getApplicationContext(), "twitterId", "\u0040" + twitterId);
+    }
+    private void setTwitterDataToViews(){
+        textView = findViewById(R.id.textView);
+        textView.setText(CustomPreferenceManager.getString(getApplicationContext(), "nickname"));
+        textView2 = findViewById(R.id.textView2);
+        textView2.setText(CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
     }
 
     private void hide() {

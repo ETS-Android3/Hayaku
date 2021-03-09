@@ -40,7 +40,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (isAdded()) {
+            if (isAdded()) {    // when fragment is attached to activity
                 if (sharedPreferences.getBoolean(key, true)) {
                     ((MainActivity) requireActivity()).createNotification();
                 } else {
