@@ -1,7 +1,7 @@
 # Hayaku
 [![CodeFactor](https://www.codefactor.io/repository/github/rielcho/hayaku/badge/main)](https://www.codefactor.io/repository/github/rielcho/hayaku/overview/main)
-[![CircleCI](https://img.shields.io/circleci/build/github/RieLCho/Hayaku/main)]
-[![License](https://img.shields.io/github/license/rielcho/hayaku)]
+![CircleCI](https://img.shields.io/circleci/build/github/RieLCho/Hayaku/main)
+![License](https://img.shields.io/github/license/rielcho/hayaku)
 
 
 
