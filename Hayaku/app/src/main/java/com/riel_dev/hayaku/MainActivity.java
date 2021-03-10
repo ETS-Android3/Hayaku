@@ -57,10 +57,9 @@ import twitter4j.conf.ConfigurationBuilder;
 public class MainActivity extends AppCompatActivity {
     // Global Basic Types
     public static final int NOTIFICATION_ID = 1;
-    String KEY_TWEET = "key_tweet";
-    Boolean isAlreadyLoggedInToTwitter;
-    String profilePicUrl;
-
+    public static final String KEY_TWEET = "key_tweet";
+    public Boolean isAlreadyLoggedInToTwitter;
+    public String profilePicUrl;
     // Global View Type Objects
     CardView accountCard;
     ImageView imageView;
@@ -68,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     TextView textView2;
     Bundle remoteInput;
     SettingsFragment settingsFragment;
-
     // Global Twitter Type Objects
     RequestToken requestToken;
     ConfigurationBuilder configurationBuilder;
@@ -217,18 +215,18 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     private void show() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "default");
         RemoteInput remoteInput = new RemoteInput.Builder(KEY_TWEET)
                 .setLabel("What's happening?")
                 .build();
 
         int randomRequestCode = new Random().nextInt(54325);
         Intent resultIntent = new Intent(this, MainActivity.class);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, randomRequestCode,
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(getApplicationContext(), randomRequestCode,
                 resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // 필수 항목
-        builder.setSmallIcon(R.mipmap.ic_tweetlikejobs);
+        builder.setSmallIcon(R.drawable.ic_twitter);
         builder.setContentText("Logged into " + CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
         builder.setContentTitle("Hayaku is running");
         builder.setOngoing(true);
@@ -241,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 액션 정의
         Intent intent2 = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 0,
                 intent2,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -255,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
         }
         manager.notify(1, builder.build());
     }
-    
+
     /* 프리퍼런스 연결 */
     private void loadSettingPreferences(){
         settingsFragment = (SettingsFragment)getSupportFragmentManager().findFragmentById(R.id.fragment);
