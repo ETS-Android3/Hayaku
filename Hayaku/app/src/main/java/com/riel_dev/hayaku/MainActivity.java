@@ -75,9 +75,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
         processInlineReply(intent);
+        super.onNewIntent(intent);
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,43 +217,92 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     private void show() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "default");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "twitterId");
         RemoteInput remoteInput = new RemoteInput.Builder(KEY_TWEET)
                 .setLabel("What's happening?")
                 .build();
 
         int randomRequestCode = new Random().nextInt(54325);
-        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        Intent resultIntent = new Intent(getApplicationContext(),MainActivity.class);
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(getApplicationContext(), randomRequestCode,
                 resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        resultPendingIntent.getActivity(getBaseContext(),randomRequestCode,resultIntent, resultPendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), randomRequestCode, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(
+                R.drawable.ic_edit, "Tweet", resultPendingIntent)
+                .addRemoteInput(remoteInput)
+                .setAllowGeneratedReplies(false)
+                .build();
 
         // 필수 항목
         builder.setSmallIcon(R.drawable.ic_twitter);
         builder.setContentText("Logged into " + CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
         builder.setContentTitle("Hayaku is running");
+        builder.setShowWhen(false);
         builder.setOngoing(true);
-
-        NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(
-                R.drawable.ic_edit, "Tweet", resultPendingIntent).addRemoteInput(remoteInput)
-                .setAllowGeneratedReplies(false)
-                .build();
         builder.addAction(tweetAction);
 
-        // 액션 정의
-        Intent intent2 = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
-                0,
-                intent2,
-                PendingIntent.FLAG_UPDATE_CURRENT);
         // 클릭 이벤트 설정
-        builder.setContentIntent(pendingIntent);
+        builder.setContentIntent(resultPendingIntent);
 
         // 알림 매니저
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            manager.createNotificationChannel(new NotificationChannel("default", "기본 채널", NotificationManager.IMPORTANCE_LOW));
+            manager.createNotificationChannel(new NotificationChannel("twitterId", "기본 채널", NotificationManager.IMPORTANCE_LOW));
         }
         manager.notify(1, builder.build());
+    }
+
+
+    private void processInlineReply(Intent intent) {
+        Bundle bundle = RemoteInput.getResultsFromIntent(intent);
+
+        if (bundle != null) {
+            Log.d("remoteInput", "들어옴");
+            CharSequence charSequence = remoteInput.getCharSequence(KEY_TWEET);
+            Toast.makeText(getApplicationContext(), charSequence, Toast.LENGTH_LONG).show();
+
+            Thread sendTwitter = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    twitter = TwitterFactory.getSingleton();
+                    try {
+                        Log.d("Status update", "true");
+                        Status status = twitter.updateStatus((String) charSequence);
+                    } catch (TwitterException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            sendTwitter.start();
+
+            //Update the notification to show that the reply was received.
+            NotificationCompat.Builder repliedNotification =
+                    new NotificationCompat.Builder(getApplicationContext())
+                            .setSmallIcon(
+                                    android.R.drawable.stat_notify_chat)
+                            .setContentText("Tweet Sent!");
+
+            NotificationManager notificationManager =
+                    (NotificationManager)
+                            getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(NOTIFICATION_ID,
+                    repliedNotification.build());
+
+        }
+    }
+    private void hide() {
+        NotificationManagerCompat.from(this).cancel(1);
+    }
+    public void createNotification() {
+        show();
+    }
+    public void removeNotification() {
+        hide();
     }
 
     /* 프리퍼런스 연결 */
@@ -296,52 +347,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-    private void processInlineReply(Intent intent) {
-        Bundle bundle = RemoteInput.getResultsFromIntent(intent);
-
-        if (bundle != null) {
-            Log.d("remoteInput", "들어옴");
-            String tweetString = remoteInput.getCharSequence(
-                    KEY_TWEET).toString();
-            Toast.makeText(getApplicationContext(), tweetString, Toast.LENGTH_LONG).show();
-
-            Thread sendTwitter = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    twitter = TwitterFactory.getSingleton();
-                    try {
-                        Status status = twitter.updateStatus(tweetString);
-                    } catch (TwitterException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            sendTwitter.start();
-
-            //Update the notification to show that the reply was received.
-            NotificationCompat.Builder repliedNotification =
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(
-                                    android.R.drawable.stat_notify_chat)
-                            .setContentText("Tweet Sent!");
-
-            NotificationManager notificationManager =
-                    (NotificationManager)
-                            getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(NOTIFICATION_ID,
-                    repliedNotification.build());
-
-        }
-    }
-    private void hide() {
-        NotificationManagerCompat.from(this).cancel(1);
-    }
-    public void createNotification() {
-        show();
-    }
-    public void removeNotification() {
-        hide();
-    }
     private void loadTwitterData() throws TwitterException {
         User user = twitter.showUser(twitter.getId());
         profilePicUrl = user.getOriginalProfileImageURLHttps();
@@ -359,9 +364,5 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(CustomPreferenceManager.getString(getApplicationContext(), "nickname"));
         textView2 = findViewById(R.id.textView2);
         textView2.setText(CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
-    }
-
-    public boolean getIsAlreadyLoggedInToTwitter(){
-        return isAlreadyLoggedInToTwitter;
     }
 }
