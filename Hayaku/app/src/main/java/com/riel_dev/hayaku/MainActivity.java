@@ -361,4 +361,7 @@ public class MainActivity extends AppCompatActivity {
         textView2.setText(CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
     }
 
+    public boolean getIsAlreadyLoggedInToTwitter(){
+        return isAlreadyLoggedInToTwitter;
+    }
 }

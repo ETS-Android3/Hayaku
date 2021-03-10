@@ -10,16 +10,16 @@
     <PreferenceCategory app:title="Timeline Streaming">
         <SwitchPreference
             app:dependency="notificationSwitch"
-            app:key="timeline"
+            app:key="timelineSwitch"
             app:title="Show timeline on notification"
             android:icon="@drawable/ic_align_left"
             />
         <ListPreference
-            app:dependency="timeline"
+            app:dependency="timelineSwitch"
             app:defaultValue="reply"
             app:entries="@array/reply_entries"
             app:entryValues="@array/reply_values"
-            app:key="reply"
+            app:key="refreshRate"
             app:title="Refresh rate"
             android:icon="@drawable/ic_refresh_ccw"
             app:useSimpleSummaryProvider="true" />

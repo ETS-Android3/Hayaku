@@ -17,6 +17,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        // logout (or not logged in) -> can't switch on
+        if(!CustomPreferenceManager.getBoolean(getContext(), "login")){
+            getPreferenceScreen().findPreference("notificationSwitch").setEnabled(false);
+        }
     }
 
     @Override
@@ -40,12 +44,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (isAdded()) {    // when fragment is attached to activity
+            /* notificationSwitch on/off */
+            if (isAdded() && key.equals("notificationSwitch")) {    // when fragment is attached to activity
                 if (sharedPreferences.getBoolean(key, true)) {
                     ((MainActivity) requireActivity()).createNotification();
                 } else {
                     ((MainActivity) requireActivity()).removeNotification();
                 }
+            }
+
+            else if(isAdded() && key.equals("timelineSwitch")){
+                // show timeline ();
+            }
+
+            else if(isAdded() && key.equals("refreshRate")){
+                // change refresh rate ();
             }
         }
     };
