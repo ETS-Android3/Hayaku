@@ -65,19 +65,16 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     TextView textView;
     TextView textView2;
-    Bundle remoteInput;
+    // Bundle remoteInput;
     SettingsFragment settingsFragment;
     // Global Twitter Type Objects
     RequestToken requestToken;
     ConfigurationBuilder configurationBuilder;
     TwitterFactory twitterFactory;
     Twitter twitter;
+    RemoteInput remoteInput;
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        processInlineReply(intent);
-        super.onNewIntent(intent);
-    }
+
 
 
 
@@ -217,84 +214,34 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     private void show() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "twitterId");
-        RemoteInput remoteInput = new RemoteInput.Builder(KEY_TWEET)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "twitterId")
+                .setSmallIcon(R.drawable.ic_twitter)
+                .setContentTitle("Hayaku is running")
+                .setShowWhen(false)
+                .setOngoing(true)
+                .setContentText("Logged into " + CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
+        Log.d("알림 생성", "성공");
+        remoteInput = new RemoteInput.Builder(KEY_TWEET)
                 .setLabel("What's happening?")
                 .build();
+        int randomRequestCode = 1000;
+        Intent resultIntent = new Intent(this, SendTweet.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, randomRequestCode, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        int randomRequestCode = new Random().nextInt(54325);
-
-        Intent resultIntent = new Intent(getApplicationContext(),MainActivity.class);
-        resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(getApplicationContext(), randomRequestCode,
-                resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        resultPendingIntent.getActivity(getBaseContext(),randomRequestCode,resultIntent, resultPendingIntent.FLAG_UPDATE_CURRENT);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), randomRequestCode, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(
-                R.drawable.ic_edit, "Tweet", resultPendingIntent)
+        NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(R.drawable.ic_edit, "Tweet", resultPendingIntent)
                 .addRemoteInput(remoteInput)
-                .setAllowGeneratedReplies(false)
+                .setAllowGeneratedReplies(true)
                 .build();
 
-        // 필수 항목
-        builder.setSmallIcon(R.drawable.ic_twitter);
-        builder.setContentText("Logged into " + CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
-        builder.setContentTitle("Hayaku is running");
-        builder.setShowWhen(false);
-        builder.setOngoing(true);
         builder.addAction(tweetAction);
-
-        // 클릭 이벤트 설정
-        builder.setContentIntent(resultPendingIntent);
-
-        // 알림 매니저
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Log.d("트윗 액션 부착: ", "성공");
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            manager.createNotificationChannel(new NotificationChannel("twitterId", "기본 채널", NotificationManager.IMPORTANCE_LOW));
+            notificationManager.createNotificationChannel(new NotificationChannel("twitterId", KEY_TWEET, NotificationManager.IMPORTANCE_LOW));
         }
-        manager.notify(1, builder.build());
+        notificationManager.notify(0, builder.build());
     }
 
-
-    private void processInlineReply(Intent intent) {
-        Bundle bundle = RemoteInput.getResultsFromIntent(intent);
-
-        if (bundle != null) {
-            Log.d("remoteInput", "들어옴");
-            CharSequence charSequence = remoteInput.getCharSequence(KEY_TWEET);
-            Toast.makeText(getApplicationContext(), charSequence, Toast.LENGTH_LONG).show();
-
-            Thread sendTwitter = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    twitter = TwitterFactory.getSingleton();
-                    try {
-                        Log.d("Status update", "true");
-                        Status status = twitter.updateStatus((String) charSequence);
-                    } catch (TwitterException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            sendTwitter.start();
-
-            //Update the notification to show that the reply was received.
-            NotificationCompat.Builder repliedNotification =
-                    new NotificationCompat.Builder(getApplicationContext())
-                            .setSmallIcon(
-                                    android.R.drawable.stat_notify_chat)
-                            .setContentText("Tweet Sent!");
-
-            NotificationManager notificationManager =
-                    (NotificationManager)
-                            getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(NOTIFICATION_ID,
-                    repliedNotification.build());
-
-        }
-    }
     private void hide() {
         NotificationManagerCompat.from(this).cancel(1);
     }
