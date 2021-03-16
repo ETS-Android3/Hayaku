@@ -12,7 +12,15 @@
         android:roundIcon="@mipmap/ic_tweetlikejobs_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TweetLikeJobs">
-        <activity android:name=".SendTweet"></activity>
+        <service
+            android:name=".SendTweetService"
+            android:enabled="true"
+            android:exported="false"></service>
+        <service
+            android:name=".SendTweetIntentService"
+            android:exported="false" />
+
+        <activity android:name=".SendTweet" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity" />
     </application>
 
 </manifest>

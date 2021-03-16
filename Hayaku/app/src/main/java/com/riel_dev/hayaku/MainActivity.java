@@ -11,6 +11,7 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -74,9 +75,12 @@ public class MainActivity extends AppCompatActivity {
     Twitter twitter;
     RemoteInput remoteInput;
 
+    Intent sendTwitterIntent;
 
-
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +114,9 @@ public class MainActivity extends AppCompatActivity {
             configurationBuilder.setOAuthAccessTokenSecret(CustomPreferenceManager.getString(getApplicationContext(), "access_secret"));
             twitterFactory = new TwitterFactory(configurationBuilder.build());
             twitter = twitterFactory.getInstance();
+
+            sendTwitterIntent = new Intent(getApplicationContext(), SendTweetService.class);
+            startService(sendTwitterIntent);
 
             Thread twitterDataLoadThread = new Thread(new Runnable() {
                 @Override
@@ -225,10 +232,11 @@ public class MainActivity extends AppCompatActivity {
                 .setLabel("What's happening?")
                 .build();
         int randomRequestCode = 1000;
-        Intent resultIntent = new Intent(this, SendTweet.class);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, randomRequestCode, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent resultIntent = new Intent(getApplicationContext(), SendTweetService.class);
+        PendingIntent tweetPendingIntent =
+                PendingIntent.getService(getApplicationContext(),randomRequestCode, resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(R.drawable.ic_edit, "Tweet", resultPendingIntent)
+        NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(R.drawable.ic_edit, "Tweet", tweetPendingIntent)
                 .addRemoteInput(remoteInput)
                 .setAllowGeneratedReplies(true)
                 .build();
@@ -240,10 +248,11 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(new NotificationChannel("twitterId", KEY_TWEET, NotificationManager.IMPORTANCE_LOW));
         }
         notificationManager.notify(0, builder.build());
+
     }
 
     private void hide() {
-        NotificationManagerCompat.from(this).cancel(1);
+        NotificationManagerCompat.from(this).cancel(0);
     }
     public void createNotification() {
         show();
@@ -294,6 +303,8 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+
     private void loadTwitterData() throws TwitterException {
         User user = twitter.showUser(twitter.getId());
         profilePicUrl = user.getOriginalProfileImageURLHttps();
@@ -312,4 +323,6 @@ public class MainActivity extends AppCompatActivity {
         textView2 = findViewById(R.id.textView2);
         textView2.setText(CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
     }
+
+
 }
