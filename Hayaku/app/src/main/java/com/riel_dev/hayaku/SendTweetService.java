@@ -4,11 +4,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.RemoteInput;
+
+import java.util.Random;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -29,6 +34,7 @@ public class SendTweetService extends Service {
     public static final String KEY_TWEET = "key_tweet";
     boolean isAlreadyLoggedInToTwitter;
     ConfigurationBuilder configurationBuilder;
+    NotificationCompat.Builder builder;
     TwitterFactory twitterFactory;
     Status status;
     Twitter twitter;
@@ -51,21 +57,38 @@ public class SendTweetService extends Service {
         isAlreadyLoggedInToTwitter = CustomPreferenceManager.getBoolean(getApplicationContext(),"login");
         if(isAlreadyLoggedInToTwitter) {
             configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.setDebugEnabled(true);
             configurationBuilder.setOAuthConsumerKey(getString(R.string.consumer_key));
             configurationBuilder.setOAuthConsumerSecret(getString(R.string.consumer_key_secret));
             configurationBuilder.setOAuthAccessToken(CustomPreferenceManager.getString(getApplicationContext(), "access_token"));
             configurationBuilder.setOAuthAccessTokenSecret(CustomPreferenceManager.getString(getApplicationContext(), "access_secret"));
             twitterFactory = new TwitterFactory(configurationBuilder.build());
+            twitter = twitterFactory.getInstance();
             Thread sendTwitter = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        twitter = twitterFactory.getInstance();
                         String tweetString = (String) getTweetText(intent);
                         status = twitter.updateStatus(tweetString);
-                    } catch (TwitterException | NullPointerException exception) {
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Tweet sent!", Toast.LENGTH_LONG).show();
+                            }
+                        },0);
+                    } catch (TwitterException exception) {
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Error: " + exception, Toast.LENGTH_LONG).show();
+                            }
+                        },0);
+                    }  catch (NullPointerException exception){
                         exception.printStackTrace();
                     }
+                    show();
                 }
             });
             sendTwitter.start();
@@ -87,4 +110,40 @@ public class SendTweetService extends Service {
         return null;
     }
 
+    private void show() {
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder = new NotificationCompat.Builder(this, "twitterId")
+                .setSmallIcon(R.drawable.ic_twitter)
+                .setContentTitle("Hayaku is running")
+                .setContentIntent(resultPendingIntent)
+                .setShowWhen(false)
+                .setOngoing(true)
+                .setContentText("Logged into " + CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
+        Log.d("알림 생성", "성공");
+        remoteInput = new RemoteInput.Builder(KEY_TWEET)
+                .setLabel("What's happening?")
+                .build();
+        int randomRequestCode = new Random().nextInt(54325);
+        Intent resultIntent2 = new Intent(getApplicationContext(), SendTweetService.class);
+        PendingIntent tweetPendingIntent =
+                PendingIntent.getService(getApplicationContext(),randomRequestCode, resultIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(R.drawable.ic_edit, "Tweet", tweetPendingIntent)
+                .addRemoteInput(remoteInput)
+                .setAllowGeneratedReplies(true)
+                .build();
+
+        builder.addAction(tweetAction);
+        Log.d("트윗 액션 부착: ", "성공");
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.createNotificationChannel(new NotificationChannel("twitterId", KEY_TWEET, NotificationManager.IMPORTANCE_LOW));
+        }
+        notificationManager.notify(0, builder.build());
+
+    }
 }

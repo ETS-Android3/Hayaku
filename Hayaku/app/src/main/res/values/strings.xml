@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Hayaku</string>
-    <string name="consumer_key">MUtaajKa22pH3wYI7VnLNWgWP</string>
-    <string name="consumer_key_secret">8vXZ9RrRJUvXaZJwdM9ZTKA2LMH8EvYvZeVozXhC4RBInKX9dU</string>
-    <string name="bearer_token">AAAAAAAAAAAAAAAAAAAAABHyHAEAAAAAuaGTigl52pSn84RI0u6Ky9ETJ3o%3DvrcutkMIM21Zva2GaNhaydIPXeM2kf4zMZMCxgvEhEMzgYvyeJ</string>
+    <string name="consumer_key">bHkIVO1ljZSFvblE7MQROA24t</string>
+    <string name="consumer_key_secret">P9c1kTWCUDue9aAwmXadanGg5ZFSL2QiwLD5mAEmVmt9CegYKb</string>
+    <string name="bearer_token">AAAAAAAAAAAAAAAAAAAAANjoNgEAAAAAhS0FDeGbn9FDXcszT%2B6TsF4pjGA%3DwMprCkNZMDX3p6SrTyVPNRiwFoy8QpN6eaPWFOdLcSjKJise3O</string>
     <string name="reply_label">Tweet</string>
 </resources>

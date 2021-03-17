@@ -17,6 +17,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import androidx.core.app.RemoteInput;
 
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
+import com.google.android.gms.tasks.Task;
 
 import java.util.Random;
 
@@ -55,7 +57,7 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     // Global Basic Types
     public static final int NOTIFICATION_ID = 1;
     public static final String KEY_TWEET = "key_tweet";
@@ -75,12 +77,15 @@ public class MainActivity extends AppCompatActivity {
     Twitter twitter;
     RemoteInput remoteInput;
 
+    NotificationCompat.Builder builder;
     Intent sendTwitterIntent;
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,9 +226,15 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     private void show() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "twitterId")
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder = new NotificationCompat.Builder(this, "twitterId")
                 .setSmallIcon(R.drawable.ic_twitter)
                 .setContentTitle("Hayaku is running")
+                .setContentIntent(resultPendingIntent)
                 .setShowWhen(false)
                 .setOngoing(true)
                 .setContentText("Logged into " + CustomPreferenceManager.getString(getApplicationContext(), "twitterId"));
@@ -231,10 +242,10 @@ public class MainActivity extends AppCompatActivity {
         remoteInput = new RemoteInput.Builder(KEY_TWEET)
                 .setLabel("What's happening?")
                 .build();
-        int randomRequestCode = 1000;
-        Intent resultIntent = new Intent(getApplicationContext(), SendTweetService.class);
+        int randomRequestCode = new Random().nextInt(54325);
+        Intent resultIntent2 = new Intent(getApplicationContext(), SendTweetService.class);
         PendingIntent tweetPendingIntent =
-                PendingIntent.getService(getApplicationContext(),randomRequestCode, resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent.getService(getApplicationContext(),randomRequestCode, resultIntent2, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Action tweetAction = new NotificationCompat.Action.Builder(R.drawable.ic_edit, "Tweet", tweetPendingIntent)
                 .addRemoteInput(remoteInput)
