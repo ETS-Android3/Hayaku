@@ -9,19 +9,18 @@
 
     <PreferenceCategory app:title="Timeline Streaming">
         <SwitchPreference
+            android:icon="@drawable/ic_align_left"
             app:dependency="notificationSwitch"
             app:key="timelineSwitch"
-            app:title="Show timeline on notification"
-            android:icon="@drawable/ic_align_left"
-            />
+            app:title="Show timeline on Hayaku" />
         <ListPreference
-            app:dependency="timelineSwitch"
+            android:icon="@drawable/ic_refresh_ccw"
             app:defaultValue="reply"
+            app:dependency="timelineSwitch"
             app:entries="@array/reply_entries"
             app:entryValues="@array/reply_values"
             app:key="refreshRate"
-            app:title="Refresh rate"
-            android:icon="@drawable/ic_refresh_ccw"
+            app:title="Timeline refresh rate"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
@@ -31,9 +30,8 @@
             android:icon="@drawable/ic_twitter"
             />
         <Preference
-            app:title="About this app"
             android:icon="@drawable/ic_info"
-            />
+            app:title="About Hayaku" />
         <Preference
             android:id="@+id/openSourceNotices"
             android:key="openSourceNotices"

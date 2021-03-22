@@ -63,29 +63,22 @@ public class MainActivity extends AppCompatActivity{
     public static final String KEY_TWEET = "key_tweet";
     public Boolean isAlreadyLoggedInToTwitter;
     public String profilePicUrl;
+
     // Global View Type Objects
     CardView accountCard;
     ImageView imageView;
     TextView textView;
     TextView textView2;
-    // Bundle remoteInput;
     SettingsFragment settingsFragment;
+    NotificationCompat.Builder builder;
+    Intent sendTwitterIntent;
+
     // Global Twitter Type Objects
     RequestToken requestToken;
     ConfigurationBuilder configurationBuilder;
     TwitterFactory twitterFactory;
     Twitter twitter;
     RemoteInput remoteInput;
-
-    NotificationCompat.Builder builder;
-    Intent sendTwitterIntent;
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-    }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +88,6 @@ public class MainActivity extends AppCompatActivity{
         loadSettingPreferences();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isNotificationOn = sharedPreferences.getBoolean("notification", false);
 
         /* Connect Views with findViewById */
         accountCard = findViewById(R.id.twitterAccountCardView);
@@ -309,12 +301,12 @@ public class MainActivity extends AppCompatActivity{
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     // 인포메이션 추가
+
                     return false;
                 }
             });
         }
     }
-
 
     private void loadTwitterData() throws TwitterException {
         User user = twitter.showUser(twitter.getId());
