@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(DialogInterface dialog, int which) {
                 CustomPreferenceManager.clear(getApplicationContext());
                 Toast.makeText(getApplicationContext(), "Logout Success", Toast.LENGTH_SHORT).show();
+                removeNotification();
                 reload();
             }
         });

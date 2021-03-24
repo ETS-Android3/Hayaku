@@ -35,6 +35,7 @@ TODO
 3. 로그인 직후 glide에서 사진을 못 받아오는 원인 찾고 고치기
 4. 그리고 로그인 화면에서 휴대폰 인증 하면 왜 크롬으로 나가지는거임?
 5. 트위터 프록시처럼 버튼 누르면 트위터에 글 쓸 수 있게 해주는거
+6. 타임라인 가져오는 기능 추가
  */
 
 public class SendTweetService extends Service {

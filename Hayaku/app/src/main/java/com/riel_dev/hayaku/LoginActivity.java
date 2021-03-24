@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
@@ -110,6 +111,14 @@ public class LoginActivity extends AppCompatActivity {
                             CustomPreferenceManager.setBoolean(getApplicationContext(), "firstLogin", true);
                             CustomPreferenceManager.setBoolean(getApplicationContext(), "login", true);
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            try {
+                                User user = twitter.showUser(twitter.getId());
+                                String twitterId = user.getScreenName();
+                                Log.d("Twitter ID: ", twitterId);
+                                CustomPreferenceManager.setString(getApplicationContext(), "twitterId", "\u0040" + twitterId);
+                            } catch (TwitterException e) {
+                                e.printStackTrace();
+                            }
                             startActivity(intent);
                             finish();
                         }
