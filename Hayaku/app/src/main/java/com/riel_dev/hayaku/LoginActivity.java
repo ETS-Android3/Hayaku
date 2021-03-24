@@ -3,6 +3,8 @@ package com.riel_dev.hayaku;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +24,9 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
 public class LoginActivity extends AppCompatActivity {
+
+    // Global Basic Type Objects
+    boolean isAppropriatePinNumber;
 
     // Global View Type Objects
     WebView webView;
@@ -85,25 +90,29 @@ public class LoginActivity extends AppCompatActivity {
                         String pinNumber = editText.getText().toString();
                         Log.d("Pin", pinNumber);
                         try {
+                            isAppropriatePinNumber =true;
                             accessToken = twitter.getOAuthAccessToken(requestToken, pinNumber);
                         } catch (TwitterException e) {
-                            if (401 == e.getStatusCode()) {
-                                Toast.makeText(getApplicationContext(), "Unable to get the access token.", Toast.LENGTH_LONG).show();
-                            }
+                            Handler handler = new Handler(Looper.getMainLooper());
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "Unable to get the access token.\nPlease check your PIN number and try again.", Toast.LENGTH_LONG).show();
+                                    isAppropriatePinNumber = false;
+                                }},0);
                         }
-                        CustomPreferenceManager.setBoolean(getApplicationContext(), "login", true);
-                        String access_token = accessToken.getToken();
-                        String access_secret = accessToken.getTokenSecret();
-
-                        CustomPreferenceManager.setString(getApplicationContext(), "access_token", access_token);
-                        CustomPreferenceManager.setString(getApplicationContext(), "access_secret", access_secret);
-
-                        Log.d("Access Token", access_token);
-                        CustomPreferenceManager.setBoolean(getApplicationContext(), "firstLogin", true);
-
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        if(isAppropriatePinNumber){
+                            String access_token = accessToken.getToken();
+                            String access_secret = accessToken.getTokenSecret();
+                            CustomPreferenceManager.setString(getApplicationContext(), "access_token", access_token);
+                            CustomPreferenceManager.setString(getApplicationContext(), "access_secret", access_secret);
+                            Log.d("Access Token", access_token);
+                            CustomPreferenceManager.setBoolean(getApplicationContext(), "firstLogin", true);
+                            CustomPreferenceManager.setBoolean(getApplicationContext(), "login", true);
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
                     }
                 });
                 twitterLoginThread2.start();

@@ -28,6 +28,15 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
+/*
+TODO
+1. 로그아웃하면 알림창 없애게 해야됨 -> 안그러면 로그아웃 하고도 알림창이 남음.
+2. 로그인 할 때 PIN 번호 잘못 입력하면 튕기는데 이거 어떻게? (일단 고침) -> 그냥 PIN 안누르게 하는게 더 좋을텐데
+3. 로그인 직후 glide에서 사진을 못 받아오는 원인 찾고 고치기
+4. 그리고 로그인 화면에서 휴대폰 인증 하면 왜 크롬으로 나가지는거임?
+5. 트위터 프록시처럼 버튼 누르면 트위터에 글 쓸 수 있게 해주는거
+ */
+
 public class SendTweetService extends Service {
 
     RemoteInput remoteInput;

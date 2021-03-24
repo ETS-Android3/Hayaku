@@ -131,21 +131,6 @@ public class MainActivity extends AppCompatActivity{
         }
 
 
-        /* Load Twitter Profile Image into ImageView */
-        if(CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl") != null) {
-            Log.d("Profile Pic Url", CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl"));
-            RequestOptions requestOptions = new RequestOptions();
-            requestOptions = requestOptions.transform(new CenterCrop(), new RoundedCorners(30));
-            Glide.with(MainActivity.this)
-                    .load(Uri.parse(CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl")))
-                    .apply(requestOptions)
-                    .placeholder(R.drawable.egg)
-                    .error(R.drawable.egg)
-                    .into(imageView);
-        }else{
-            Glide.with(this).load(R.drawable.egg).into(imageView);
-        }
-
         /* Describe When User touches CardView (Twitter Account Information) */
         accountCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -321,6 +306,20 @@ public class MainActivity extends AppCompatActivity{
         CustomPreferenceManager.setString(getApplicationContext(), "twitterId", "\u0040" + twitterId);
     }
     private void setTwitterDataToViews(){
+        /* Load Twitter Profile Image into ImageView */
+        if(CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl") != null) {
+            Log.d("Profile Pic Url", CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl"));
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions = requestOptions.transform(new CenterCrop(), new RoundedCorners(30));
+            Glide.with(MainActivity.this)
+                    .load(Uri.parse(CustomPreferenceManager.getString(getApplicationContext(), "profilePicUrl")))
+                    .apply(requestOptions)
+                    .placeholder(R.drawable.egg)
+                    .error(R.drawable.egg)
+                    .into(imageView);
+        }else{
+            Glide.with(this).load(R.drawable.egg).into(imageView);
+        }
         textView = findViewById(R.id.textView);
         textView.setText(CustomPreferenceManager.getString(getApplicationContext(), "nickname"));
         textView2 = findViewById(R.id.textView2);
