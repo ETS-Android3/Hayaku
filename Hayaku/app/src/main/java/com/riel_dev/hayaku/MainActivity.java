@@ -33,6 +33,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -47,6 +50,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Random;
 
@@ -133,6 +137,9 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ActionBar actionBar = getSupportActionBar();
+        Spannable text = new SpannableString(actionBar.getTitle());
+        text.setSpan(new ForegroundColorSpan(Color.BLACK), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        actionBar.setTitle(text);
         actionBar.setElevation(0);
         loadSettingPreferences();
 
@@ -141,7 +148,7 @@ public class MainActivity extends AppCompatActivity{
 
         /* Connect Views with findViewById */
         accountCard = findViewById(R.id.twitterAccountCardView);
-        imageView = (ImageView)findViewById(R.id.imageView);
+        imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.textView);
         textView2 = findViewById(R.id.textView2);
 
@@ -194,7 +201,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 CustomPreferenceManager.clear(getApplicationContext());
-                Toast.makeText(getApplicationContext(), "Logout Success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.logout_notification, Toast.LENGTH_SHORT).show();
                 removeNotification();
                 reload();
             }

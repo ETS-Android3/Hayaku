@@ -8,6 +8,8 @@ import android.widget.Toast;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.Objects;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -58,7 +60,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             else if(isAdded() && key.equals("bootNotificationSwitch")){
                 if(sharedPreferences.getBoolean(key, false)){
                     CustomPreferenceManager.setBoolean(getContext(), key, true);
-                    Toast.makeText(getContext(),"Now Hayaku will start on boot", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(getView(), R.string.start_hayaku_notification, Snackbar.LENGTH_SHORT).show();
                 }else{
                     CustomPreferenceManager.setBoolean(getContext(), key, false);
                 }
