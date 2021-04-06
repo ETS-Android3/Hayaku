@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <item android:id="@+id/otherBroswer_button"
-        android:title="Open in other broswer"
+        android:title="@string/open_in_other_broswer"
         android:icon="@drawable/ic_chrome"
         app:showAsAction="always"
         />

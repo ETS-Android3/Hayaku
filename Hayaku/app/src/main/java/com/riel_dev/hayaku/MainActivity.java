@@ -1,5 +1,6 @@
 package com.riel_dev.hayaku;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -31,6 +32,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -82,19 +84,6 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        loadSettingPreferences();
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        /* Connect Views with findViewById */
-        accountCard = findViewById(R.id.twitterAccountCardView);
-        imageView = (ImageView)findViewById(R.id.imageView);
-        textView = findViewById(R.id.textView);
-        textView2 = findViewById(R.id.textView2);
-
         @SuppressLint("HandlerLeak") Handler twitterDataLoadHandler = new Handler(){
             public void handleMessage(Message msg){
                 setTwitterDataToViews();
@@ -129,7 +118,32 @@ public class MainActivity extends AppCompatActivity{
             });
             twitterDataLoadThread.start();
         }
+        Thread sleepThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        sleepThread.start();
+        setTheme(R.style.AppTheme);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setElevation(0);
+        loadSettingPreferences();
 
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        /* Connect Views with findViewById */
+        accountCard = findViewById(R.id.twitterAccountCardView);
+        imageView = (ImageView)findViewById(R.id.imageView);
+        textView = findViewById(R.id.textView);
+        textView2 = findViewById(R.id.textView2);
 
         /* Describe When User touches CardView (Twitter Account Information) */
         accountCard.setOnClickListener(new View.OnClickListener() {

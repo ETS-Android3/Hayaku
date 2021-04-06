@@ -1,12 +1,17 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+            android:id="@+id/notificationSwitch"
+            android:icon="@drawable/ic_power"
+            app:key="notificationSwitch"
+            app:title="Hayaku" />
 
     <SwitchPreference
-        android:id="@+id/notificationSwitch"
-        android:icon="@drawable/ic_power"
-        app:key="notificationSwitch"
-        app:title="Hayaku" />
+            android:id="@+id/bootNotificationSwitch"
+            app:key="bootNotificationSwitch"
+            app:title="Start Hayaku on boot" />
 
+    <!--
     <PreferenceCategory app:title="Timeline Streaming">
         <SwitchPreference
             android:icon="@drawable/ic_align_left"
@@ -23,6 +28,7 @@
             app:title="Timeline refresh rate"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
+    -->
 
     <PreferenceCategory android:title="ETC">
         <Preference

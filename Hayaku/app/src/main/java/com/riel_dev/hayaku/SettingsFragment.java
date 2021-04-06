@@ -3,6 +3,7 @@ package com.riel_dev.hayaku;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
@@ -46,10 +47,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             /* notificationSwitch on/off */
             if (isAdded() && key.equals("notificationSwitch")) {    // when fragment is attached to activity
-                if (sharedPreferences.getBoolean(key, true)) {
+                if (sharedPreferences.getBoolean(key, false)) {
                     ((MainActivity) requireActivity()).createNotification();
                 } else {
                     ((MainActivity) requireActivity()).removeNotification();
+                }
+            }
+
+            /* start service at boot on/off */
+            else if(isAdded() && key.equals("bootNotificationSwitch")){
+                if(sharedPreferences.getBoolean(key, false)){
+                    CustomPreferenceManager.setBoolean(getContext(), key, true);
+                    Toast.makeText(getContext(),"Now Hayaku will start on boot", Toast.LENGTH_SHORT).show();
+                }else{
+                    CustomPreferenceManager.setBoolean(getContext(), key, false);
                 }
             }
 
@@ -60,6 +71,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             else if(isAdded() && key.equals("refreshRate")){
                 // change refresh rate ();
             }
+
+
         }
     };
 

@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -31,11 +32,15 @@ import twitter4j.conf.ConfigurationBuilder;
 /*
 TODO
 1. 로그아웃하면 알림창 없애게 해야됨 -> 안그러면 로그아웃 하고도 알림창이 남음.
-2. 로그인 할 때 PIN 번호 잘못 입력하면 튕기는데 이거 어떻게? (일단 고침) -> 그냥 PIN 안누르게 하는게 더 좋을텐데
-3. 로그인 직후 glide에서 사진을 못 받아오는 원인 찾고 고치기
+2. 로그인 할 때 PIN 번호 잘못 입력하면 튕기는데 이거 어떻게? (일단 고침) -> 그냥 PIN 안누르게 하는게 더 좋을텐데 (딥 링크)
+3. 로그인 직후 glide에서 사진을 못 받아오는 원인 찾고 고치기 (일단 고침)
 4. 그리고 로그인 화면에서 휴대폰 인증 하면 왜 크롬으로 나가지는거임?
 5. 트위터 프록시처럼 버튼 누르면 트위터에 글 쓸 수 있게 해주는거
 6. 타임라인 가져오는 기능 추가
+7. 앱 알림 뱃지 1 뜨는거 없애기
+8. 아이콘 해상도 낮아보이는거 고치기 -> 나인패치 적용하면 되려나
+9. 트위터 데이터도 그냥 캐싱했다가 불러오는거로 바꿀까? 지금 데이터 로딩되는게 너무 느린거같아 (아니면 스플래쉬 이미지로?)
+10. 앱 아이콘 각도 수정하기 (위로 올라가는게 더 좋대)
  */
 
 public class SendTweetService extends Service {
@@ -156,4 +161,6 @@ public class SendTweetService extends Service {
         notificationManager.notify(0, builder.build());
 
     }
+
+
 }

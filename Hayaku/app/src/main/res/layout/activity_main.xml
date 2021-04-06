@@ -39,6 +39,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="3dp"
+                    android:fontFamily="@font/maplestorybold"
                     android:text="Login to Twitter"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
@@ -47,6 +48,7 @@
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/maplestorybold"
                     android:text="Please touch"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="17sp" />
@@ -56,7 +58,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="10dp"
         app:cardUseCompatPadding="true">
