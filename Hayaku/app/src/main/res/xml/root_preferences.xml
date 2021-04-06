@@ -9,6 +9,7 @@
     <SwitchPreference
             android:id="@+id/bootNotificationSwitch"
             app:key="bootNotificationSwitch"
+            app:dependency="notificationSwitch"
             app:title="Start Hayaku on boot" />
 
     <PreferenceCategory app:title="Timeline Streaming">

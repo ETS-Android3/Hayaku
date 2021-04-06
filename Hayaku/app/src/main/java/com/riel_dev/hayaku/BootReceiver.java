@@ -11,8 +11,7 @@ import androidx.annotation.RequiresApi;
 import java.util.logging.Handler;
 
 public class BootReceiver extends BroadcastReceiver {
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     @Override
     public void onReceive(Context context, Intent intent) {
         if(CustomPreferenceManager.getBoolean(context, "bootNotificationSwitch")) {
@@ -20,7 +19,12 @@ public class BootReceiver extends BroadcastReceiver {
             if (action.equals("android.intent.action.BOOT_COMPLETED")) {
                 Intent bootIntent = new Intent(context, SendTweetService.class);
                 bootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startForegroundService(bootIntent);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                    context.startForegroundService(bootIntent);
+                }
+                else{
+                    context.startService(bootIntent);
+                }
             }
         }
     }
