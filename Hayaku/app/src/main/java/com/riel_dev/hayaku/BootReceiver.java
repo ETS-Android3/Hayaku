@@ -11,7 +11,7 @@ import androidx.annotation.RequiresApi;
 import java.util.logging.Handler;
 
 public class BootReceiver extends BroadcastReceiver {
-    
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if(CustomPreferenceManager.getBoolean(context, "bootNotificationSwitch")) {

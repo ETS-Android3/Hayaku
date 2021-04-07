@@ -12,7 +12,6 @@
             app:title="Start Hayaku on boot"
             app:dependency="notificationSwitch"/>
 
-
     <PreferenceCategory app:title="Timeline Streaming">
         <SwitchPreference
             android:icon="@drawable/ic_align_left"
@@ -30,15 +29,16 @@
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
-
     <PreferenceCategory android:title="ETC">
         <Preference
             app:title="Tutorial"
             android:icon="@drawable/ic_twitter"
+            android:key="tutorial"
             />
         <Preference
             android:icon="@drawable/ic_info"
-            app:title="About Hayaku" />
+            app:title="About Hayaku"
+            android:key ="information"/>
         <Preference
             android:id="@+id/openSourceNotices"
             android:key="openSourceNotices"

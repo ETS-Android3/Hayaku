@@ -1,5 +1,6 @@
 package com.riel_dev.hayaku;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +40,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity{
     SettingsFragment settingsFragment;
     NotificationCompat.Builder builder;
     Intent sendTwitterIntent;
-    AdView adView;
+    private AdView adView;
 
     // Global Twitter Type Objects
     RequestToken requestToken;
@@ -139,14 +141,14 @@ public class MainActivity extends AppCompatActivity{
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
 
             }
         });
+        adView = findViewById(R.id.adView2);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 
-        adView = (AdView)findViewById(R.id.adView2);
-        adView.setAdSize(AdSize.SMART_BANNER);
-        adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -281,8 +283,12 @@ public class MainActivity extends AppCompatActivity{
 
         // Open Source Notices
         Preference OssPreference = null;
+        Preference tutorialPreference = null;
+        Preference infoPreference = null;
         if (settingsFragment != null) {
             OssPreference = settingsFragment.findPreference("openSourceNotices");
+            tutorialPreference = settingsFragment.findPreference("tutorial");
+            infoPreference = settingsFragment.findPreference("information");
         }
         if (OssPreference != null) {
             OssPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -294,26 +300,23 @@ public class MainActivity extends AppCompatActivity{
                 }
             });
         }
-
-        Preference tutorialPreference = settingsFragment.findPreference("tutorial");
         if (tutorialPreference != null) {
             tutorialPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     // 튜토리얼 추가
-                    return false;
+                    startActivity(new Intent(getApplicationContext(), TutorialActivity.class));
+                    return true;
                 }
             });
         }
-
-        Preference infoPreference = settingsFragment.findPreference("information");
         if (infoPreference != null) {
             infoPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     // 인포메이션 추가
-
-                    return false;
+                    startActivity(new Intent(getApplicationContext(),AboutActivity.class));
+                    return true;
                 }
             });
         }

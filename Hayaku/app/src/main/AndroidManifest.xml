@@ -17,7 +17,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3455813154288454~8490736446"/>
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
 
         <receiver android:name=".BootReceiver"
             android:enabled="true"
@@ -41,8 +41,25 @@
                 <action android:name="android.intent.action.VIEW"/>
             </intent-filter>
         </activity>
+
         <activity android:name=".LoginActivity"
             android:theme="@style/AppTheme"/>
+        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/AppTheme"/>
+        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/AppTheme"/>
+        <activity android:name=".AboutActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <activity android:name=".TutorialActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
     </application>
 
 </manifest>
