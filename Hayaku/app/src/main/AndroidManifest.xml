@@ -14,7 +14,11 @@
         android:roundIcon="@mipmap/ic_tweetlikejobs_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TweetLikeJobs">
-        
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3455813154288454~8490736446"/>
+
         <receiver android:name=".BootReceiver"
             android:enabled="true"
             android:exported="false"

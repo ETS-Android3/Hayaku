@@ -12,13 +12,13 @@
             app:title="Start Hayaku on boot"
             app:dependency="notificationSwitch"/>
 
-    <!--
+
     <PreferenceCategory app:title="Timeline Streaming">
         <SwitchPreference
             android:icon="@drawable/ic_align_left"
             app:dependency="notificationSwitch"
             app:key="timelineSwitch"
-            app:title="Show timeline on Haykau" />
+            app:title="Show timeline on Hayaku" />
         <ListPreference
             android:icon="@drawable/ic_refresh_ccw"
             app:defaultValue="reply"
@@ -29,7 +29,7 @@
             app:title="Timeline refresh rate"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
-    -->
+
 
     <PreferenceCategory android:title="ETC">
         <Preference
