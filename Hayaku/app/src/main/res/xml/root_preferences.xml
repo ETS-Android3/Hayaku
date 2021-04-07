@@ -1,5 +1,6 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <SwitchPreference
             android:id="@+id/notificationSwitch"
             android:icon="@drawable/ic_power"
@@ -12,24 +13,22 @@
             app:title="Start Hayaku on boot"
             app:dependency="notificationSwitch"/>
 
-    <PreferenceCategory app:title="Timeline Streaming">
+    <PreferenceCategory app:title="#Footer">
         <SwitchPreference
-            android:icon="@drawable/ic_align_left"
-            app:dependency="notificationSwitch"
-            app:key="timelineSwitch"
-            app:title="Show timeline on Hayaku" />
-        <ListPreference
-            android:icon="@drawable/ic_refresh_ccw"
-            app:defaultValue="reply"
-            app:dependency="timelineSwitch"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="refreshRate"
-            app:title="Timeline refresh rate"
-            app:useSimpleSummaryProvider="true" />
+            app:key="footerSwitch"
+            app:title="Enable tweet footer"
+            app:icon="@drawable/ic_file_plus"
+            app:defaultValue="true"
+            app:dependency="notificationSwitch"/>
+        <EditTextPreference
+            app:title="Set footer"
+            app:icon="@drawable/ic_edit"
+            app:key="footerTextPreference"
+            app:defaultValue="- on Hayaku"
+            app:dependency="footerSwitch"/>
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="ETC">
+    <PreferenceCategory android:title="#ETC">
         <Preference
             app:title="Tutorial"
             android:icon="@drawable/ic_twitter"

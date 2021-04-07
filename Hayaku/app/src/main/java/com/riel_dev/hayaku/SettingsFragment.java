@@ -66,14 +66,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 }
             }
 
-            else if(isAdded() && key.equals("timelineSwitch")){
-                // show timeline ();
+            else if(isAdded() && key.equals("footerSwitch")){
+                // Enable Footer
+                if(sharedPreferences.getBoolean(key, false)){
+                    CustomPreferenceManager.setBoolean(getContext(), key, true);
+                    CustomPreferenceManager.setString(getContext(), key, sharedPreferences.getString(key, " - on Hayaku"));
+                    Snackbar.make(getView(), "Now Hayaku will enable tweet footer", Snackbar.LENGTH_SHORT).show();
+                }else{
+                    CustomPreferenceManager.setBoolean(getContext(), key, false);
+                }
             }
 
-            else if(isAdded() && key.equals("refreshRate")){
-                // change refresh rate ();
+            else if(isAdded() && key.equals("footerTextPreference")){
+                CustomPreferenceManager.setString(getContext(), key, sharedPreferences.getString(key, " - on Hayaku"));
             }
-
 
         }
     };

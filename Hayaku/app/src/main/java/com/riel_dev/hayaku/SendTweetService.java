@@ -84,6 +84,11 @@ public class SendTweetService extends Service {
                 public void run() {
                     try {
                         String tweetString = (String) getTweetText(intent);
+                        if((tweetString!= null) && (CustomPreferenceManager.getBoolean(getApplicationContext(), "footerSwitch"))){
+                            tweetString += " ";
+                            tweetString += (String)CustomPreferenceManager.getString(getApplicationContext(), "footerTextPreference");
+                            Log.d("Footer", tweetString);
+                        }
                         status = twitter.updateStatus(tweetString);
                         Handler handler = new Handler(Looper.getMainLooper());
                         handler.postDelayed(new Runnable() {
