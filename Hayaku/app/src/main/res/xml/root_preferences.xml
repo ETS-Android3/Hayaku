@@ -24,7 +24,7 @@
             app:title="Set footer"
             app:icon="@drawable/ic_edit"
             app:key="footerTextPreference"
-            app:defaultValue="- on Hayaku"
+            app:defaultValue="- via Hayaku"
             app:dependency="footerSwitch"/>
     </PreferenceCategory>
 

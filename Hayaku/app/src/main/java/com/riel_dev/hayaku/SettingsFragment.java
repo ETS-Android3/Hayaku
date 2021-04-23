@@ -70,7 +70,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 // Enable Footer
                 if(sharedPreferences.getBoolean(key, false)){
                     CustomPreferenceManager.setBoolean(getContext(), key, true);
-                    CustomPreferenceManager.setString(getContext(), key, sharedPreferences.getString(key, " - on Hayaku"));
+                    CustomPreferenceManager.setString(getContext(), "footerTextPreference", sharedPreferences.getString("footerTextPreference", " - via Hayaku"));
                     Snackbar.make(getView(), "Now Hayaku will enable tweet footer", Snackbar.LENGTH_SHORT).show();
                 }else{
                     CustomPreferenceManager.setBoolean(getContext(), key, false);
