@@ -185,8 +185,8 @@ public class MainActivity extends AppCompatActivity{
                                 intent.putExtra("requestToken", requestToken);
                                 startActivity(intent);
                                 finish();
-                            } catch (TwitterException e) {
-                                e.printStackTrace();
+                            } catch (TwitterException exception) {
+                                Toast.makeText(MainActivity.this, exception.toString(), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
