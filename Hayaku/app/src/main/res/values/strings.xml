@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Hayaku</string>
-    <string name="consumer_key">bHkIVO1ljZSFvblE7MQROA24t</string>
-    <string name="consumer_key_secret">P9c1kTWCUDue9aAwmXadanGg5ZFSL2QiwLD5mAEmVmt9CegYKb</string>
-    <string name="bearer_token">AAAAAAAAAAAAAAAAAAAAANjoNgEAAAAAhS0FDeGbn9FDXcszT%2B6TsF4pjGA%3DwMprCkNZMDX3p6SrTyVPNRiwFoy8QpN6eaPWFOdLcSjKJise3O</string>
+    <string name="consumer_key">PUT YOUR CONSUMER KEY HERE</string>
+    <string name="consumer_key_secret">PUT YOUR SECRET KEY HERE</string>
+    <string name="bearer_token">PUT YOUR BEARER TOKEN HERE</string>
     <string name="reply_label">Tweet</string>
     <string name="open_in_other_broswer">Open in other broswer</string>
     <string name="start_hayaku_notification">Now Hayaku will start on boot</string>
